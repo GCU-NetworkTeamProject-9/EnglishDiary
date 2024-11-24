@@ -5,7 +5,7 @@ import java.util.*;
 public class DiaryChallengeServer {
     private static final int PORT = 12345; // 서버 포트 번호
     private static Map<String, Map<Integer, Integer>> userDiaryCount = new HashMap<>(); // 클라이언트별 날짜별 일기 개수
-    private static Map<String, Integer> successCount = new HashMap<>(); // 클라이언트별 성공 횟수
+    private static Map<String, Integer> successDaysMap = new HashMap<>(); // 클라이언트별 성공한 날짜의 총합
     private static int challengeDays = 7; // 챌린지 기간 (일 단위)
 
     public static void main(String[] args) {
@@ -44,10 +44,10 @@ public class DiaryChallengeServer {
 
                 // 클라이언트 데이터 초기화
                 userDiaryCount.putIfAbsent(clientName, new HashMap<>());
-                successCount.putIfAbsent(clientName, 0);
+                successDaysMap.putIfAbsent(clientName, 0);
 
                 out.println("Welcome to the Diary Challenge, " + clientName + "!");
-                out.println("Commands: [write <diary entry>, status, evaluate, rank, exit]");
+                out.println("Commands: [write <diary entry>, status, rank, exit]");
 
                 String input;
                 while ((input = in.readLine()) != null) {
@@ -57,15 +57,13 @@ public class DiaryChallengeServer {
                         out.println("Diary entry saved for " + clientName + "!");
                     } else if (input.equals("status")) {
                         checkStatus(clientName);
-                    } else if (input.equals("evaluate")) {
-                        evaluateChallenge(clientName);
                     } else if (input.equals("rank")) {
                         showRanking();
                     } else if (input.equals("exit")) {
                         out.println("Goodbye!");
                         break;
                     } else {
-                        out.println("Unknown command. Use: write, status, evaluate, rank, exit");
+                        out.println("Unknown command. Use: write, status, rank, exit");
                     }
                 }
             } catch (IOException e) {
@@ -86,6 +84,11 @@ public class DiaryChallengeServer {
 
             // 현재 날짜의 일기 개수 업데이트
             diaryMap.put(currentDay, diaryMap.getOrDefault(currentDay, 0) + 1);
+
+            // 성공한 날짜 확인 및 업데이트
+            if (diaryMap.get(currentDay) == 1) { // 첫 번째 일기를 작성하면 성공으로 간주
+                successDaysMap.put(clientName, successDaysMap.get(clientName) + 1);
+            }
         }
 
         private void checkStatus(String clientName) {
@@ -95,36 +98,17 @@ public class DiaryChallengeServer {
                 int count = diaryMap.getOrDefault(day, 0);
                 out.println("Day " + day + ": " + count + " diary entries");
             }
-        }
-
-        private void evaluateChallenge(String clientName) {
-            Map<Integer, Integer> diaryMap = userDiaryCount.get(clientName);
-            int successDays = 0;
-
-            for (int day = 1; day <= challengeDays; day++) {
-                if (diaryMap.getOrDefault(day, 0) > 0) {
-                    successDays++; // 하루라도 일기가 있으면 성공
-                }
-            }
-
-            double completionRate = (successDays / (double) challengeDays) * 100;
-
-            if (completionRate >= 50) {
-                out.println("Challenge completed! Success Days: " + successDays);
-                successCount.put(clientName, successCount.get(clientName) + 1);
-            } else {
-                out.println("Challenge failed. Success Days: " + successDays + ". Completion rate: " + completionRate + "%");
-            }
+            out.println("Total success days: " + successDaysMap.get(clientName));
         }
 
         private void showRanking() {
-            List<Map.Entry<String, Integer>> ranking = new ArrayList<>(successCount.entrySet());
-            ranking.sort((a, b) -> b.getValue() - a.getValue()); // 성공 횟수 기준 내림차순 정렬
+            List<Map.Entry<String, Integer>> ranking = new ArrayList<>(successDaysMap.entrySet());
+            ranking.sort((a, b) -> b.getValue() - a.getValue()); // 성공 날짜 총합 기준 내림차순 정렬
 
             out.println("=== Challenge Ranking ===");
             int rank = 1;
             for (Map.Entry<String, Integer> entry : ranking) {
-                out.println(rank + ". " + entry.getKey() + " - Successes: " + entry.getValue());
+                out.println(rank + ". " + entry.getKey() + " - Total Success Days: " + entry.getValue());
                 rank++;
             }
         }
