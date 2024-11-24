@@ -1,9 +1,0 @@
-User: user5
-    Challenge: Challenge 3
-Day 1: Completed the challenge with a morning walk.
-Day 2: Drank 2L of water after meals.
-Day 3: Missed the goal due to a busy schedule.
-        Day 1: Completed the challenge with a morning walk.
-        Day 2: Drank 2L of water after1 meals.
-        Day 3: Missed the goal due to a busy schedule.
-
