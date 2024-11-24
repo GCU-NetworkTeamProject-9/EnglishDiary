@@ -1,0 +1,13 @@
+User: user1
+
+User: user3
+        Day 1: Completed the challenge with a morning walk.
+        Day 2: Drank 2L of wat1er after meals.
+        Day 3: Missed the goal due to a busy schedule.
+
+User: user5
+    Challenge: Challenge 3
+
+        Day 1: Completed the challenge with a morning walk.
+        Day 2: Drank 2L of wat1er after meals.
+        Day 3: Missed the goal due to a busy schedule.

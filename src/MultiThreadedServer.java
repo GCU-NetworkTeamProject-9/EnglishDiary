@@ -11,11 +11,20 @@ public class MultiThreadedServer {
             System.out.println("Server is running on port " + PORT);
 
             while (true) {
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("New client connected: " + clientSocket.getInetAddress());
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
-                clientHandlers.add(clientHandler);
-                new Thread(clientHandler).start(); // 각 클라이언트별 스레드 생성
+                Socket clientSocket = serverSocket.accept(); //기다리다가 새 클라이언트가 요청시 accept
+                System.out.println("New client connected: " + clientSocket.getInetAddress()); //New client 연결됨 표시
+                ClientHandler clientHandler = new ClientHandler(clientSocket); //새 클라이언트의 클라이언트 핸들러 추가
+                clientHandlers.add(clientHandler); //클라이언트 추가 --
+                new Thread(clientHandler).start(); // 각 클라이언트별 스레드 생성 및 run() 메서드 실행
+
+//                BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
+//
+//                // 사용자 입력을 서버로 전송
+//                String userMessage;
+//                while ((userMessage = userInput.readLine()) != null) {
+//                    clientHandler.sendMessage(userMessage);
+//                }
+
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,7 +48,7 @@ public class MultiThreadedServer {
         }
 
         @Override
-        public void run() {
+        public void run() { //스레드 호출 시 자동으로 실행됨
             try {
                 String message;
                 out.println("Welcome to the server!");
