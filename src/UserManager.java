@@ -1,86 +1,194 @@
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class UserManager {
 
-    private static final String FILE_PATH = "src/data/user.txt";
+    private static final String FILE_PATH = "src/data/user_diary.txt";
+    private static final String USER_FILE_PATH = "src/data/user.txt";
 
-    public static void addChallengeToUserDiary(String userNickname, String challengeName, Map<String, String> dailyDiaries) {
+    public static void addChallengeToUserDiary(String userNickname, String challengeName, Map<String, String> dailyDiary) throws IOException {
 
         // 기존 데이터를 저장할 구조체
-        Map<String, Map<String, List<String>>> userData = new LinkedHashMap<>();
+        List<String> fileContent = new ArrayList<>();
+        boolean userToHold = false;
+        boolean challengeFound = false;
+
+        String holdingUser = null;
+        String currentUser = null;
+        String currentChallenge = null;
 
         // Step 1: 파일 읽기 및 데이터 로드
         try (BufferedReader reader = new BufferedReader(new FileReader(FILE_PATH))) {
-            String line;
-            String currentUser = null;
-            String currentChallenge = null;
-
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
+            String line = reader.readLine();
+            while (line != null) {
                 if (line.startsWith("User:")) {
-                    currentUser = line.split(": ")[1];
-                    userData.putIfAbsent(currentUser, new LinkedHashMap<>());
-                } else if (line.startsWith("Challenge:") && currentUser != null) {
-                    currentChallenge = line.split(": ")[1];
-                    userData.get(currentUser).putIfAbsent(currentChallenge, new ArrayList<>());
-                } else if (line.startsWith("Day") && currentUser != null && currentChallenge != null) {
-                    userData.get(currentUser).get(currentChallenge).add(line);
-                }
-            }
-        } catch (FileNotFoundException e) {
-            // 파일이 없으면 새로 생성
-            System.out.println("File not found, creating a new one.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                    currentUser = line.split(": ")[1].trim();
+                    fileContent.add(line);
 
-        // Step 2: 데이터 수정 또는 추가
-        userData.putIfAbsent(userNickname, new LinkedHashMap<>()); // userNickname 존재 x -> key : userNickname, value는 하위 챌린지 생성을 위한 LinkedHashMap으로
-        Map<String, List<String>> userChallenges = userData.get(userNickname); //userNickname의 Challenge 정보를 가져옴
-        userChallenges.putIfAbsent(challengeName, new ArrayList<>()); //만약 해당 챌린지에 참가하지 않았다면 새 챌린지를 추가함
+                    if (currentUser.equals(userNickname)) {
+                        line = reader.readLine();
+                        System.out.println("Entered in : " + line);
+                        if(line == null) break;
+                        if(line.startsWith("    Challenge:")){
+                            currentChallenge = line.split(": ")[1].trim();
+                            fileContent.add(line);
 
-        // 기존 Challenge에 일일 일기 추가
-        for (Map.Entry<String, String> entry : dailyDiaries.entrySet()) {
-            String day = entry.getKey();
-            String diary = entry.getValue();
-            userChallenges.get(challengeName).add("        " + day + ": " + diary);
-        }
+                            if (currentChallenge.equals(challengeName)) {
+                                line = reader.readLine();
+                                System.out.println("1" + line);
+                                if(!line.startsWith("User:")){
 
-        // Step 3: 파일 쓰기
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
-            for (Map.Entry<String, Map<String, List<String>>> userEntry : userData.entrySet()) {
-                writer.write("User: " + userEntry.getKey());
-                writer.newLine();
-                for (Map.Entry<String, List<String>> challengeEntry : userEntry.getValue().entrySet()) {
-                    writer.write("    Challenge: " + challengeEntry.getKey());
-                    writer.newLine();
-                    for (String diaryEntry : challengeEntry.getValue()) {
-                        writer.write(diaryEntry);
-                        writer.newLine();
+                                    if (line.startsWith("        Day")) {
+                                        fileContent.add(line);
+                                        System.out.println("2" + line);
+                                    }
+                                    System.out.println("3" + line);
+                                    // Add new daily diaries
+                                    for (Map.Entry<String, String> entry : dailyDiary.entrySet()) {
+                                        fileContent.add("        " + entry.getKey() + ": " + entry.getValue());
+                                    }
+                                }else{
+                                    userToHold = true;
+                                    holdingUser = line;
+                                    System.out.println("3" + line);
+                                    // Add new daily diaries
+                                    for (Map.Entry<String, String> entry : dailyDiary.entrySet()) {
+                                        fileContent.add("        " + entry.getKey() + ": " + entry.getValue());
+                                    }
+                                }
+                            }
+                        }else{
+                            userToHold = true;
+                            holdingUser = line;
+                            System.out.println("4" + line);
+                            fileContent.add("    Challenge: " + challengeName);
+
+                            line = reader.readLine();
+                            while (line.startsWith("        Day")) {
+                                System.out.println("5" + line);
+                                fileContent.add(line);
+                                line = reader.readLine();
+                            }
+                            // Add new daily diaries
+                            for (Map.Entry<String, String> entry : dailyDiary.entrySet()) {
+                                fileContent.add("        " + entry.getKey() + ": " + entry.getValue());
+                            }
+                            System.out.println("6" + line);
+
+                        }
+
+                        if(userToHold) {
+                            fileContent.add(holdingUser);
+                            userToHold = false;
+                        };
+
                     }
+                    else{ // 목적 user 가 아닌 애들 fileContent에 추가
+                        line = reader.readLine();
+                        if(line == null) break;
+                        System.out.println("Entered in : " + line);
+                        if(line.startsWith("    Challenge:")){
+                            fileContent.add(line);
+
+                            line = reader.readLine();
+
+                            System.out.println("1" + line);
+
+                            if(!line.startsWith("User:")){
+                                while (line.startsWith("        Day")) {
+                                    fileContent.add(line);
+                                    System.out.println("2" + line);
+                                    line = reader.readLine();
+
+                                }
+                                System.out.println("3" + line);
+                            }
+                        }
+
+                    }
+                    System.out.println("ended" + line);
+
+                }else{
+
+                    line = reader.readLine();
+                    if(line == null) break;
                 }
-                writer.newLine(); // 사용자 간 간격
+//                else if (userFound && line.startsWith("    Challenge:")) {
+//                    currentChallenge = line.split(": ")[1].trim();
+//                    fileContent.add(line);
+//
+//                    if (currentChallenge.equals(challengeName)) {
+//                        challengeFound = true;
+//                    }
+//                } else if (userFound && challengeFound && line.startsWith("        Day")) {
+//                    fileContent.add(line);
+//                } else {
+//                    fileContent.add(line);
+//                }
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+
+
+//        // Add new daily diaries
+//        for (Map.Entry<String, String> entry : dailyDiaries.entrySet()) {
+//            fileContent.add("        " + entry.getKey() + ": " + entry.getValue());
+//        }
+
+        System.out.println("hello world");
+        // Step 3: Write back the updated file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            for (String line : fileContent) {
+                writer.write(line);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private static Set<String> readUsers() throws IOException {
+        Set<String> validUsers = new HashSet<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(USER_FILE_PATH))) {
+            String line;
+            while ((line = reader.readLine()) != null) {if (line.startsWith("User Nickname:")) {
+                String[] parts = line.split(": ");
+                if (parts.length > 1) { // 방어적 코드 추가
+                    String nickname = parts[1].trim();
+                    validUsers.add(nickname);
+                    System.out.println("Nickname added: " + nickname);
+                } else {
+                    System.out.println("Invalid line format: " + line);
+                }
+            }
+
+            }
+        }
+        return validUsers;
+    }
+
+    private static void initUsers() throws IOException {
+        Set<String> validUsers = new HashSet<>();
+        validUsers = readUsers();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH))) {
+            for (String line : validUsers) {
+                writer.write("User: " + line);
+                writer.newLine();
+            }
         }
     }
 
-    // 테스트를 위한 main 메서드
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         // 새로운 사용자와 챌린지 데이터
         String userNickname = "user5";
-        String challengeName = "Challenge 3";
-        Map<String, String> dailyDiaries = new LinkedHashMap<>();
-        dailyDiaries.put("Day 1", "Completed the challenge with a morning walk.");
-        dailyDiaries.put("Day 2", "Drank 2L of water after meals.");
-        dailyDiaries.put("Day 3", "Missed the goal due to a busy schedule.");
+        String challengeName = "Challenge 1";
+        Map<String, String> dailyDiary = new HashMap<>();
+        dailyDiary.put("Day 1", "Playing Soccer");
 
         // 데이터 추가
-        addChallengeToUserDiary(userNickname, challengeName, dailyDiaries);
+        addChallengeToUserDiary(userNickname, challengeName, dailyDiary);
     }
 }

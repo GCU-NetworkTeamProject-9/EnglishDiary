@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.*;
 
-public class UserDiaryManager {
+public class ChallengeManager {
 
     private static final String FILE_PATH = "src/data/user_diary.txt";
     private static final String USER_FILE_PATH = "src/data/user.txt";

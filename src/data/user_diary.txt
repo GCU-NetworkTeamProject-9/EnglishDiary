@@ -1,13 +1,12 @@
 User: user1
-
-User: user3
-        Day 1: Completed the challenge with a morning walk.
-        Day 2: Drank 2L of wat1er after meals.
-        Day 3: Missed the goal due to a busy schedule.
-
+    Challenge: Challenge 5
+        Day 1: Playing games
+        Day 2: Studying Hard
+User: user2
+    Challenge: Challenge 7
+        Day 1: Studying Computer Networking
 User: user5
-    Challenge: Challenge 3
-
-        Day 1: Completed the challenge with a morning walk.
-        Day 2: Drank 2L of wat1er after meals.
-        Day 3: Missed the goal due to a busy schedule.
+    Challenge: Challenge 1
+        Day 1: Playing Soccer
+User: user3
+User: user4
