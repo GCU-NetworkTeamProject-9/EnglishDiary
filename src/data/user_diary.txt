@@ -5,8 +5,8 @@ User: user1
 User: user2
     Challenge: Challenge 7
         Day 1: Studying Computer Networking
+User: user3
+User: user4
 User: user5
     Challenge: Challenge 1
         Day 1: Playing Soccer
-User: user3
-User: user4
