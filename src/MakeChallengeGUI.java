@@ -2,8 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
+
 
 public class MakeChallengeGUI {
+    public static final String SERVER_ADDRESS = "127.0.0.1";
+    public static final int SERVER_PORT = 12345;
 
     public static void main(String[] args) {
         // 메인 프레임 생성
@@ -22,10 +31,11 @@ public class MakeChallengeGUI {
 
 // "Make Challenge" 화면 클래스
 class MakeChallengePanel extends JPanel {
-    private JFrame parentFrame;
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
 
     public MakeChallengePanel(JFrame parentFrame) {
-        this.parentFrame = parentFrame;
         setLayout(null); // 절대 레이아웃 설정
 
         // 배경 패널 생성
@@ -47,41 +57,51 @@ class MakeChallengePanel extends JPanel {
         nameField.setBounds(200, 100, 250, 30);
         add(nameField);
 
+        // 챌린지 설명 입력 필드
+        JLabel descriptionLabel = new JLabel("챌린지 설명:");
+        descriptionLabel.setFont(new Font("나눔고딕", Font.PLAIN, 18));
+        descriptionLabel.setBounds(50, 150, 150, 30);
+        add(descriptionLabel);
+
+        JTextField descriptionField = new JTextField();
+        descriptionField.setBounds(200, 150, 250, 30);
+        add(descriptionField);
+
         // 시작 날짜 입력 필드
         JLabel startDateLabel = new JLabel("시작 날짜:");
         startDateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 18));
-        startDateLabel.setBounds(50, 150, 150, 30);
+        startDateLabel.setBounds(50, 200, 150, 30);
         add(startDateLabel);
 
         JTextField startDateField = new JTextField("YYYY-MM-DD");
-        startDateField.setBounds(200, 150, 250, 30);
+        startDateField.setBounds(200, 200, 250, 30);
         add(startDateField);
 
         // 종료 날짜 입력 필드
         JLabel endDateLabel = new JLabel("종료 날짜:");
         endDateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 18));
-        endDateLabel.setBounds(50, 200, 150, 30);
+        endDateLabel.setBounds(50, 250, 150, 30);
         add(endDateLabel);
 
         JTextField endDateField = new JTextField("YYYY-MM-DD");
-        endDateField.setBounds(200, 200, 250, 30);
+        endDateField.setBounds(200, 250, 250, 30);
         add(endDateField);
 
         // 참여자 수 입력 필드
         JLabel participantsLabel = new JLabel("최대 참여자 수:");
         participantsLabel.setFont(new Font("나눔고딕", Font.PLAIN, 18));
-        participantsLabel.setBounds(50, 250, 150, 30);
+        participantsLabel.setBounds(50, 300, 150, 30);
         add(participantsLabel);
 
         JTextField participantsField = new JTextField();
-        participantsField.setBounds(200, 250, 250, 30);
+        participantsField.setBounds(200, 300, 250, 30);
         add(participantsField);
 
         // 생성 버튼
         CustomButton createButton = new CustomButton("생성하기");
-        createButton.setBounds(200, 320, 120, 40);
+        createButton.setBounds(200, 370, 120, 40);
         add(createButton);
-        
+
         // 하단 메뉴
         CustomButton2 challengeMenuButton = new CustomButton2("챌린지");
         challengeMenuButton.setBounds(0, 860, 180, 60);
@@ -98,22 +118,34 @@ class MakeChallengePanel extends JPanel {
         // 챌린지 생성 버튼 이벤트 추가
         createButton.addActionListener(e -> {
             String name = nameField.getText();
+            String description = descriptionField.getText();
             String startDate = startDateField.getText();
             String endDate = endDateField.getText();
             String participants = participantsField.getText();
 
-            // 데이터 확인 및 출력
-            JOptionPane.showMessageDialog(this, 
-                "챌린지 제목: " + name +
-                "\n시작 날짜: " + startDate +
-                "\n종료 날짜: " + endDate +
-                "\n최대 참여자 수: " + participants,
-                "챌린지 생성 성공", JOptionPane.INFORMATION_MESSAGE);
-            
-            parentFrame.dispose(); // 현재 창 종료
-            ChallengeGUI.main(new String[]{}); // RankingGUI 실행
+            try {
+                socket = new Socket(LoginGUI.SERVER_ADDRESS, LoginGUI.SERVER_PORT);
+                out = new PrintWriter(socket.getOutputStream(), true);
+
+                // 데이터 확인 및 출력
+                JOptionPane.showMessageDialog(this,
+                        "챌린지 제목: " + name +
+                                "\n시작 날짜: " + startDate +
+                                "\n종료 날짜: " + endDate +
+                                "\n최대 참여자 수: " + participants,
+                        "챌린지 생성 성공", JOptionPane.INFORMATION_MESSAGE);
+
+                System.out.println("create_challenge " + name + "|" + description + "|" + startDate + "|" + endDate);
+                out.println("create_challenge " + name + "|" + description + "|" + startDate + "|" + endDate);
+
+                parentFrame.dispose(); // 현재 창 종료
+                ChallengeGUI.main(new String[]{});
+                ChallengeGUI.refreshGUI();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid Server Connection or Null value exception", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
-        
+
         // 메뉴 버튼 클릭 이벤트
         challengeMenuButton.addActionListener(new ActionListener() {
             @Override
