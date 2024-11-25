@@ -36,7 +36,7 @@ public class RankingGUI {
 //로그인 화면 클래스
 class RankingPanel extends JPanel {
  private JFrame parentFrame;
-
+ public int order=33; // 내 랭킹 순위 받아오기
  public RankingPanel(JFrame parentFrame) {
      this.parentFrame = parentFrame;
      setLayout(null);
@@ -47,6 +47,12 @@ class RankingPanel extends JPanel {
      titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 25));
      titleLabel.setBounds(65, 20, 400, 70);
      add(titleLabel);
+     
+     // 내 순위 레이블
+     JLabel myRanking = new JLabel("내 순위는 "+order+"위 입니다.");
+     myRanking.setFont(new Font("나눔고딕", Font.BOLD, 16));
+     myRanking.setBounds(280, 25, 400, 70);
+     add(myRanking);
 
      String[] columnNames2 = {"순위", "이름", "성공 횟수"};
      DefaultTableModel tableModel2 = new DefaultTableModel(columnNames2, 0);
@@ -86,7 +92,30 @@ class RankingPanel extends JPanel {
      mypageMenuButton.setBounds(360, 860, 180, 60);
      add(mypageMenuButton);
 
-     
+     // 버튼 클릭 이벤트
+     challengeMenuButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+             parentFrame.dispose(); // 현재 창 종료
+             ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
+         }
+     });
+
+     rankingMenuButton.addActionListener(new ActionListener() {
+         @Override
+         public void actionPerformed(ActionEvent e) {
+             parentFrame.dispose(); // 현재 창 종료
+             RankingGUI.main(new String[]{}); // RankingGUI 실행
+         }
+     });
+
+//     mypageMenuButton.addActionListener(new ActionListener() {
+//         @Override
+//         public void actionPerformed(ActionEvent e) {
+//             parentFrame.dispose(); // 현재 창 종료
+//             MyPageGUI.main(new String[]{}); // MyPageGUI 실행
+//         }
+//     });
      
  }
 }

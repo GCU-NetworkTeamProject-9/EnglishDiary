@@ -83,7 +83,7 @@ class LoginPanel extends JPanel {
                     //JOptionPane.showMessageDialog(null, "Login Successful!");
 
                     // MainGUI 실행
-                    MainGUI.main(new String[]{}); // MainGUI의 main 메서드 실행
+                    ChallengeGUI.main(new String[]{}); // MainGUI의 main 메서드 실행
                     parentFrame.dispose(); // 현재 로그인 창 닫기
                 } else {
                     JOptionPane.showMessageDialog(null, "Invalid ID or Password", "Error", JOptionPane.ERROR_MESSAGE);

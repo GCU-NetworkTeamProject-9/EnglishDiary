@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ public class ChallengeGUI {
                 LocalDate.of(2024, 11, 5), LocalDate.of(2024, 12, 5), 15));
 
         // 챌린지 패널 생성 및 추가
-        ChallengePanel challengePanel = new ChallengePanel(challenges);
+        ChallengePanel challengePanel = new ChallengePanel(frame, challenges);
         frame.add(challengePanel);
 
         // 프레임 표시
@@ -32,7 +34,10 @@ public class ChallengeGUI {
 
 // 챌린지 화면 클래스
 class ChallengePanel extends JPanel {
-    public ChallengePanel(List<Challenge> challenges) {
+    private JFrame parentFrame;
+
+    public ChallengePanel(JFrame parentFrame, List<Challenge> challenges) {
+        this.parentFrame = parentFrame; // parentFrame 초기화
         setLayout(null);
         setBackground(new Color(224, 255, 255)); // 하늘색 배경 설정
 
@@ -50,33 +55,77 @@ class ChallengePanel extends JPanel {
             add(challengeCard);
             yOffset += 170; // 다음 패널 간격
         }
-        
+
         // 챌린지 참여 버튼
         CustomButton joinChallengeButton = new CustomButton("챌린지 참여");
         joinChallengeButton.setBounds(45, 650, 200, 45);
         add(joinChallengeButton);
-        
+
         // 챌린지 생성 버튼
         CustomButton makeChallengeButton = new CustomButton("새 챌린지 만들기");
         makeChallengeButton.setBounds(275, 650, 200, 45);
         add(makeChallengeButton);
-        
-        //하단 메뉴
-        CustomButton2 challengeMenuButton=new CustomButton2("챌린지");
+
+        // 하단 메뉴
+        CustomButton2 challengeMenuButton = new CustomButton2("챌린지");
         challengeMenuButton.setBounds(0, 860, 180, 60);
         add(challengeMenuButton);
-        
-        CustomButton2 rankingMenuButton=new CustomButton2("랭킹");
+
+        CustomButton2 rankingMenuButton = new CustomButton2("랭킹");
         rankingMenuButton.setBounds(180, 860, 180, 60);
         add(rankingMenuButton);
-        
-        CustomButton2 mypageMenuButton=new CustomButton2("마이페이지");
+
+        CustomButton2 mypageMenuButton = new CustomButton2("마이페이지");
         mypageMenuButton.setBounds(360, 860, 180, 60);
         add(mypageMenuButton);
+
+        // 버튼 클릭 이벤트
+        joinChallengeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentFrame.dispose(); // 현재 창 종료
+                JoinChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
+            }
+        });
+
+        makeChallengeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentFrame.dispose(); // 현재 창 종료
+                MakeChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
+            }
+        });
+
+        
+        challengeMenuButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentFrame.dispose(); // 현재 창 종료
+                ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
+            }
+        });
+
+        rankingMenuButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                parentFrame.dispose(); // 현재 창 종료
+                RankingGUI.main(new String[]{}); // RankingGUI 실행
+            }
+        });
+
+//        mypageMenuButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                parentFrame.dispose(); // 현재 창 종료
+//                MyPageGUI.main(new String[]{}); // MyPageGUI 실행
+//            }
+//        });
+        
+        
     }
 
-    	// 개별 챌린지 카드를 생성하는 메서드
-    	private JPanel createChallengeCard(Challenge challenge) {
+    // 개별 챌린지 카드를 생성하는 메서드
+    private JPanel createChallengeCard(Challenge challenge) {
         JPanel cardPanel = new JPanel();
         cardPanel.setLayout(null);
         cardPanel.setBackground(Color.WHITE); // 카드 배경 흰색
@@ -114,8 +163,6 @@ class ChallengePanel extends JPanel {
 
         return cardPanel;
     }
-    
-    
 }
 
 // Challenge 클래스
