@@ -2,140 +2,42 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 public class ChallengeGUI {
-    public static final String SERVER_ADDRESS = "127.0.0.1";
-    public static final int SERVER_PORT = 12345;
-    private static Socket socket;
-    private static BufferedReader in;
-    private static PrintWriter out;
-
-    private static JFrame mainFrame;
-    private static ChallengePanel mainPanel;
-
-    static List<MultiThreadedServer.ChallengeInfo> challengeList1 = null;
-
-    // 주기적으로 서버의 챌린지 리스트를 확인하는 타이머 추가
-    private static Timer refreshTimer;
-
-
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+        // 메인 프레임 생성
+        JFrame frame = new JFrame("Challenge");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(540, 960);
 
-            MultiThreadedServer.addObserver(challenges -> {
-                challengeList1 = challenges; // 옵저버로부터 최신 데이터 업데이트
-                System.out.println("Observer triggered in GUI. List size: " + challengeList1.size());
-                SwingUtilities.invokeLater(ChallengeGUI::refreshGUI);
-                updateChallengePanel();
-            });
+        // 챌린지 목록 생성
+        List<Challenge> challenges = new ArrayList<>();
+        challenges.add(new Challenge("Daily English Diary for Beginners", "Solve one coding problem daily.",
+                LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 30), 12));
+        challenges.add(new Challenge("Daily English Book Reading", "Exercise for 30 minutes daily.",
+                LocalDate.of(2024, 10, 15), LocalDate.of(2024, 12, 15), 20));
+        challenges.add(new Challenge("Daily English Diary for General", "Read 10 pages of a book daily.",
+                LocalDate.of(2024, 11, 5), LocalDate.of(2024, 12, 5), 15));
 
-            // `challengeList1`을 초기화
-            updateChallengePanel();
-            System.out.println("List size: " + challengeList1.size());
+        // 챌린지 패널 생성 및 추가
+        ChallengePanel challengePanel = new ChallengePanel(frame, challenges);
+        frame.add(challengePanel);
 
-            // 메인 프레임 생성
-            mainFrame = new JFrame("Challenge");
-            mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            mainFrame.setSize(540, 960);
-
-//        challenges.add(new Challenge("Daily English Diary for Beginners", "Solve one coding problem daily.",
-//                LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 30), 12));
-//        challenges.add(new Challenge("Daily English Book Reading", "Exercise for 30 minutes daily.",
-//                LocalDate.of(2024, 10, 15), LocalDate.of(2024, 12, 15), 20));
-//        challenges.add(new Challenge("Daily English Diary for General", "Read 10 pages of a book daily.",
-//                LocalDate.of(2024, 11, 5), LocalDate.of(2024, 12, 5), 15));
-
-            // 초기 챌린지 패널 생성
-            mainPanel = new ChallengePanel(mainFrame, challengeList1);
-            mainFrame.add(mainPanel);
-            mainFrame.setVisible(true);
-            // 프레임 표시
-            mainFrame.setVisible(true);
-        });
-    }
-    private static void updateChallengePanel() {
-        try{
-            socket = new Socket(LoginGUI.SERVER_ADDRESS, LoginGUI.SERVER_PORT);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
-
-            out.println("list_challenges");
-
-            // 챌린지 리스트 수신 및 파싱
-            List<MultiThreadedServer.ChallengeInfo> receivedChallenges = new ArrayList<>();
-            String response;
-            while ((response = in.readLine()) != null) {
-                System.out.println( " - " + response);
-                if (response.equals("CHALLENGE_LIST_START")) {
-                    continue;
-                } else if (response.equals("CHALLENGE_LIST_END")) {
-                    break;
-                } else if (response.startsWith("CHALLENGE|")) {
-                    String[] parts = response.split("\\|");
-                    // parts 배열을 사용하여 ChallengeInfo 객체 생성
-                    String id = parts[1];
-                    String title = parts[2];
-                    String description = parts[3];
-                    String startDate = parts[4];
-                    String endDate = parts[5];
-                    String creator = parts[6];
-                    // 참여자 수 등 추가 정보가 있다면 처리55
-                    MultiThreadedServer.ChallengeInfo challenge = new MultiThreadedServer.ChallengeInfo(id, title, description, startDate, endDate, creator);
-                    receivedChallenges.add(challenge);
-                }
-            }
-
-            // challengeList1 업데이트
-            challengeList1 = receivedChallenges;
-
-        } catch (UnknownHostException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    public static void refreshGUI() {
-        if (mainFrame != null) {
-            System.out.println("Refreshing GUI...");
-            System.out.println("Local challenge list size: " + challengeList1.size());
-            System.out.println("Server challenge list size: " + MultiThreadedServer.getChallengeList().size());
-
-            mainFrame.getContentPane().removeAll();
-            mainPanel = new ChallengePanel(mainFrame, challengeList1);
-            mainFrame.add(mainPanel);
-            mainFrame.revalidate();
-            mainFrame.repaint();
-        }
-    }
-
-
-    // 프로그램 종료 시 타이머 정리
-    public static void cleanup() {
-        if (refreshTimer != null) {
-            refreshTimer.stop();
-        }
+        // 프레임 표시
+        frame.setVisible(true);
     }
 }
 
 // 챌린지 화면 클래스
 class ChallengePanel extends JPanel {
-    public ChallengePanel(JFrame parentFrame, List<MultiThreadedServer.ChallengeInfo> challenges) {
-        System.out.println("ChallengePanel initialized with size: " + challenges.size());
-        for (MultiThreadedServer.ChallengeInfo challenge : challenges) {
-            System.out.println("Challenge in panel: " + challenge.getTitle());
-        }
+    private JFrame parentFrame;
 
+    public ChallengePanel(JFrame parentFrame, List<Challenge> challenges) {
+        this.parentFrame = parentFrame; // parentFrame 초기화
         setLayout(null);
         setBackground(new Color(224, 255, 255)); // 하늘색 배경 설정
 
@@ -147,8 +49,7 @@ class ChallengePanel extends JPanel {
 
         // 챌린지 목록 추가
         int yOffset = 100; // 첫 번째 패널의 Y축 위치
-        for (MultiThreadedServer.ChallengeInfo challenge : challenges) {
-            System.out.println("yes : " + challenges.size());
+        for (Challenge challenge : challenges) {
             JPanel challengeCard = createChallengeCard(challenge);
             challengeCard.setBounds(40, yOffset, 440, 150); // 위치와 크기 설정
             add(challengeCard);
@@ -192,7 +93,6 @@ class ChallengePanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 parentFrame.dispose(); // 현재 창 종료
                 MakeChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
-                System.out.println("ended");
             }
         });
 
@@ -223,8 +123,9 @@ class ChallengePanel extends JPanel {
         
         
     }
+
     // 개별 챌린지 카드를 생성하는 메서드
-    private JPanel createChallengeCard(MultiThreadedServer.ChallengeInfo challenge) {
+    private JPanel createChallengeCard(Challenge challenge) {
         JPanel cardPanel = new JPanel();
         cardPanel.setLayout(null);
         cardPanel.setBackground(Color.WHITE); // 카드 배경 흰색
@@ -265,38 +166,38 @@ class ChallengePanel extends JPanel {
 }
 
 // Challenge 클래스
-//class Challenge {
-//    private String title;
-//    private String description;
-//    private LocalDate startDate;
-//    private LocalDate endDate;
-//    private int participants;
-//
-//    public Challenge(String title, String description, LocalDate startDate, LocalDate endDate, int participants) {
-//        this.title = title;
-//        this.description = description;
-//        this.startDate = startDate;
-//        this.endDate = endDate;
-//        this.participants = participants;
-//    }
-//
-//    public String getTitle() {
-//        return title;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public LocalDate getStartDate() {
-//        return startDate;
-//    }
-//
-//    public LocalDate getEndDate() {
-//        return endDate;
-//    }
-//
-//    public int getParticipants() {
-//        return participants;
-//    }
-//}
+class Challenge {
+    private String title;
+    private String description;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private int participants;
+
+    public Challenge(String title, String description, LocalDate startDate, LocalDate endDate, int participants) {
+        this.title = title;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.participants = participants;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public int getParticipants() {
+        return participants;
+    }
+}
