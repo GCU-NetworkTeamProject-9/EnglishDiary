@@ -1,4 +1,4 @@
-
+실행방법 : 먼저 DiaryChallengeServer 를 실행한 후에, LoginGUI 를 실행하면 된다.
 <img width="540" alt="스크린샷 2024-11-26 오후 8 27 01" src="https://github.com/user-attachments/assets/d9f65ce8-b0e6-45de-8af9-177711e32ac3">
 <img width="544" alt="스크린샷 2024-11-26 오후 8 27 29" src="https://github.com/user-attachments/assets/cd3ca473-e4b2-48f3-838c-dd8d4cff9462">
 <img width="543" alt="스크린샷 2024-11-26 오후 8 27 43" src="https://github.com/user-attachments/assets/7edb5904-1742-408e-9560-8cc45ef76079">
