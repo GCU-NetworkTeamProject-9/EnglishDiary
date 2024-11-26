@@ -63,7 +63,7 @@ public class DiaryChallengeServer {
                     handleClientRequest(input);
                 }
             } catch (IOException e) {
-                System.out.println("client.Client disconnected.");
+                System.out.println("Client disconnected.");
             } finally {
                 try {
                     socket.close();
@@ -182,13 +182,13 @@ public class DiaryChallengeServer {
             List<Map.Entry<String, Integer>> ranking = new ArrayList<>(successDaysMap.entrySet());
             ranking.sort((a, b) -> b.getValue() - a.getValue());
 
-            out.println("=== Challenge Ranking ===");
+            out.println("startRanking");
             int rank = 1;
             for (Map.Entry<String, Integer> entry : ranking) {
-                out.println(rank + ". " + entry.getKey() + " - Total Success Days: " + entry.getValue());
+                out.println(rank + "," + entry.getKey() + "," + entry.getValue());
                 rank++;
             }
-            out.println("end");
+            out.println("endRanking");
         }
 
         private int getRank(String clientName) {

@@ -1,89 +1,97 @@
 package client;
 
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.*;
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.JTableHeader;
 
 public class RankingGUI {
 
-	public static void main(String[] args) {
-        // 메인 프레임 생성
+    public static void main(String[] args) {
+        System.out.println("client.RankingGUI");
         JFrame frame = new JFrame("Ranking");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(540,960);
+        frame.setSize(540, 960);
 
-        // 챌린지 패널 생성 및 추가
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
         RankingPanel rankingPanel = new RankingPanel(frame);
-        frame.add(rankingPanel);
 
-        
+        JScrollPane scrollPane = new JScrollPane(rankingPanel);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // 프레임 표시
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+        buttonPanel.setPreferredSize(new Dimension(540, 60));
+        buttonPanel.setBackground(new Color(224, 255, 255));
+
+        CustomButton2 challengeMenuButton = new CustomButton2("챌린지");
+        CustomButton2 rankingMenuButton = new CustomButton2("랭킹");
+        CustomButton2 mypageMenuButton = new CustomButton2("마이페이지");
+
+        buttonPanel.add(challengeMenuButton);
+        buttonPanel.add(rankingMenuButton);
+        buttonPanel.add(mypageMenuButton);
+
+        challengeMenuButton.addActionListener(e -> {
+            frame.dispose();
+            ChallengeGUI.main(new String[]{});
+        });
+
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        frame.add(mainPanel);
         frame.setVisible(true);
     }
 }
 
-//로그인 화면 클래스
 class RankingPanel extends JPanel {
- private JFrame parentFrame;
+    public RankingPanel(JFrame parentFrame) {
+        setLayout(new BorderLayout());
+        setBackground(new Color(224, 255, 255));
 
- public RankingPanel(JFrame parentFrame) {
-     this.parentFrame = parentFrame;
-     setLayout(null);
-     setBackground(new Color(224, 255, 255)); // 하늘색 배경 설정
+        JLabel titleLabel = new JLabel("랭킹");
+        titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 25));
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(titleLabel, BorderLayout.NORTH);
 
-     // 랭킹 레이블
-     JLabel titleLabel = new JLabel("랭킹");
-     titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 25));
-     titleLabel.setBounds(65, 20, 400, 70);
-     add(titleLabel);
+        String[] columnNames = {"순위", "이름", "성공 횟수"};
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0);
+        JTable rankingTable = new JTable(tableModel);
 
-     String[] columnNames2 = {"순위", "이름", "성공 횟수"};
-     DefaultTableModel tableModel2 = new DefaultTableModel(columnNames2, 0);
-     JTable rankingTable = new JTable(tableModel2);
-     
-     // 데이터 추가 (20개)
-     for (int i = 1; i <= 100; i++) {
-         tableModel2.addRow(new Object[]{i, "사용자 " + i, (int) (Math.random() * 10) + 1});
-     }
-     // 테이블 스타일 설정
-     rankingTable.setBackground(Color.WHITE); // 테이블 배경 흰색
-     rankingTable.setForeground(Color.BLACK); // 텍스트 색상 검정
-     rankingTable.setFont(new Font("나눔고딕", Font.PLAIN, 14)); // 텍스트 크기 설정
-     rankingTable.setRowHeight(30); // 행 높이 설정
+        try {
+            // 서버에서 랭킹 데이터 가져오기
+            PrintWriter out = new PrintWriter(LoginGUI.socket.getOutputStream(), true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(LoginGUI.socket.getInputStream()));
 
-     // 테이블 헤더 스타일 설정
-     JTableHeader tableHeader = rankingTable.getTableHeader();
-     tableHeader.setFont(new Font("나눔고딕", Font.BOLD, 16)); // 헤더 글씨 크기 설정
-     tableHeader.setBackground(new Color(220, 220, 220)); // 헤더 배경색 설정
-     tableHeader.setForeground(Color.BLACK); // 헤더 글씨 색상 설정
+            out.println("rank"); // 랭킹 요청
 
-     // 스크롤 패널 생성 및 테이블 추가
-     JScrollPane tableScrollPane2 = new JScrollPane(rankingTable);
-     tableScrollPane2.setBounds(60, 100, 400, 700);
-     add(tableScrollPane2);
-     
-     //하단 메뉴
-     CustomButton2 challengeMenuButton=new CustomButton2("챌린지");
-     challengeMenuButton.setBounds(0, 860, 180, 60);
-     add(challengeMenuButton);
-     
-     CustomButton2 rankingMenuButton=new CustomButton2("랭킹");
-     rankingMenuButton.setBounds(180, 860, 180, 60);
-     add(rankingMenuButton);
-     
-     CustomButton2 mypageMenuButton=new CustomButton2("마이페이지");
-     mypageMenuButton.setBounds(360, 860, 180, 60);
-     add(mypageMenuButton);
+            String line;
+            boolean isRanking = false;
+            while ((line = in.readLine()) != null) {
+                if (line.equals("startRanking")) {
+                    isRanking = true;
+                    continue;
+                }
+                if (line.equals("endRanking")) {
+                    break;
+                }
+                if (isRanking) {
+                    String[] data = line.split(",");
+                    if (data.length == 3) {
+                        tableModel.addRow(new Object[]{data[0], data[1], data[2]});
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "서버와 연결할 수 없습니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
 
-     
-     
- }
+        JScrollPane tableScrollPane = new JScrollPane(rankingTable);
+        add(tableScrollPane, BorderLayout.CENTER);
+    }
 }
