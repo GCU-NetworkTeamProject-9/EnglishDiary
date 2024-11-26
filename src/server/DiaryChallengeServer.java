@@ -162,7 +162,7 @@ public class DiaryChallengeServer {
 
             diaryMap.putIfAbsent(currentDay, new ArrayList<>());
             diaryMap.get(currentDay).add(diaryEntry);
-
+            System.out.println("New diary added for user " + clientName + ": " + diaryEntry);
             if (diaryMap.get(currentDay).size() == 1) {
                 successDaysMap.put(clientName, successDaysMap.get(clientName) + 1);
             }
