@@ -1,3 +1,5 @@
+package client;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
@@ -9,7 +11,7 @@ public class MakeChallengeGUI {
 
     public static void main(String[] args) {
 
-        JFrame frame = new JFrame("Make Challenge");
+        JFrame frame = new JFrame("Make client.Challenge");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(540, 960);
 

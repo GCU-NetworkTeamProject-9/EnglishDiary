@@ -1,7 +1,7 @@
+package client;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -9,11 +9,11 @@ public class JoinChallengeGUI {
 
     public static void main(String[] args) {
         // 메인 프레임 생성
-        JFrame frame = new JFrame("Join Challenge");
+        JFrame frame = new JFrame("Join client.Challenge");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(540, 960);
 
-        // "Join Challenge" 화면 추가
+        // "Join client.Challenge" 화면 추가
         JoinChallengePanel joinChallengePanel = new JoinChallengePanel(frame);
         frame.add(joinChallengePanel);
 
@@ -22,7 +22,7 @@ public class JoinChallengeGUI {
     }
 }
 
-// "Join Challenge" 화면 클래스
+// "Join client.Challenge" 화면 클래스
 class JoinChallengePanel extends JPanel {
     private JFrame parentFrame;
 

@@ -1,7 +1,9 @@
+package client;
+
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class DiaryChallengeClient {
     private static final String SERVER_ADDRESS = "127.0.0.1"; // 서버 주소
     private static final int SERVER_PORT = 12345; // 서버 포트 번호
 
@@ -11,14 +13,14 @@ public class Client {
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in))) {
 
-            System.out.println("Connected to the server!");
+            System.out.println("Connected to the Diary client.Challenge server!");
 
-            // 서버로부터 메시지 수신 스레드
+            // 서버에서 메시지 수신
             Thread readThread = new Thread(() -> {
                 String serverMessage;
                 try {
                     while ((serverMessage = in.readLine()) != null) {
-                        System.out.println("Server: " + serverMessage);
+                        System.out.println(serverMessage);
                     }
                 } catch (IOException e) {
                     System.out.println("Disconnected from the server.");
@@ -30,6 +32,9 @@ public class Client {
             String userMessage;
             while ((userMessage = userInput.readLine()) != null) {
                 out.println(userMessage);
+                if (userMessage.equals("exit")) {
+                    break;
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -63,7 +63,7 @@ public class DiaryChallengeServer {
                     handleClientRequest(input);
                 }
             } catch (IOException e) {
-                System.out.println("Client disconnected.");
+                System.out.println("client.Client disconnected.");
             } finally {
                 try {
                     socket.close();
