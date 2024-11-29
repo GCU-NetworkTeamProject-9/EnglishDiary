@@ -1,171 +1,209 @@
+package client;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChallengeGUI {
 
+    private static PrintWriter out;
+    private static BufferedReader in;
+
     public static void main(String[] args) {
-        // 메인 프레임 생성
-        JFrame frame = new JFrame("Challenge");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(540, 960);
+        System.out.println("client.ChallengeGUI");
+        try {
+            // 서버 연결
+            Socket socket = LoginGUI.socket; // 로그인 GUI에서 이미 연결된 소켓을 사용
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out = new PrintWriter(socket.getOutputStream(), true);
 
-        // 챌린지 목록 생성
+            // 챌린지 데이터 요청
+            out.println("challenges");
+            List<Challenge> challenges = fetchChallenges();
+
+            // GUI 생성
+            JFrame frame = new JFrame("Challenge");
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setSize(540, 960);
+
+            // 메인 패널 생성 (전체 컨테이너)
+            JPanel mainPanel = new JPanel();
+            mainPanel.setLayout(new BorderLayout());
+            mainPanel.setBackground(new Color(224, 255, 255));
+
+            // 챌린지 목록 패널
+            ChallengePanel challengePanel = new ChallengePanel(challenges);
+
+            // 챌린지 목록을 스크롤 가능하게 설정
+            JScrollPane scrollPane = new JScrollPane(challengePanel);
+            scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+            scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+            // 버튼 패널 (챌린지 생성 및 참여 버튼)
+            JPanel actionButtonPanel = new JPanel();
+            actionButtonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+            actionButtonPanel.setPreferredSize(new Dimension(540, 80));
+            actionButtonPanel.setBackground(new Color(224, 255, 255));
+
+            CustomButton joinChallengeButton = new CustomButton("챌린지 참여");
+            CustomButton makeChallengeButton = new CustomButton("새 챌린지 만들기");
+            actionButtonPanel.add(joinChallengeButton);
+            actionButtonPanel.add(makeChallengeButton);
+
+            // 하단 탭
+            JPanel bottomTabPanel = new JPanel(new GridLayout(1, 3));
+            bottomTabPanel.setPreferredSize(new Dimension(540, 60));
+            bottomTabPanel.setBackground(new Color(224, 255, 255));
+
+            CustomButton2 challengeMenuButton = new CustomButton2("챌린지");
+            CustomButton2 rankingMenuButton = new CustomButton2("랭킹");
+            CustomButton2 mypageMenuButton = new CustomButton2("마이페이지");
+
+            bottomTabPanel.add(challengeMenuButton);
+            bottomTabPanel.add(rankingMenuButton);
+            bottomTabPanel.add(mypageMenuButton);
+
+            // 메인 패널에 구성 요소 추가
+            mainPanel.add(scrollPane, BorderLayout.CENTER); // 챌린지 목록
+            mainPanel.add(actionButtonPanel, BorderLayout.SOUTH); // 챌린지 생성/참여 버튼 및 하단 탭
+
+            // 버튼 이벤트 리스너
+            joinChallengeButton.addActionListener(e -> {
+                frame.dispose();
+                JoinChallengeGUI.main(new String[]{}); // JoinChallengeGUI 실행
+            });
+
+            makeChallengeButton.addActionListener(e -> {
+                frame.dispose();
+                MakeChallengeGUI.main(new String[]{}); // MakeChallengeGUI 실행
+            });
+
+            rankingMenuButton.addActionListener(e -> {
+                frame.dispose();
+                RankingGUI.main(new String[]{}); // RankingGUI 실행
+            });
+
+            challengeMenuButton.addActionListener(e -> {
+                frame.dispose();
+                ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
+            });
+            
+            mypageMenuButton.addActionListener(e -> {
+                frame.dispose();
+                MyPageGUI.main(new String[]{}); // MyPageGUI 실행
+            });
+
+            // 프레임에 메인 패널 추가
+            frame.add(mainPanel);
+            frame.add(bottomTabPanel, BorderLayout.PAGE_END); // 하단 탭
+            frame.setVisible(true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to connect to the server.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static List<Challenge> fetchChallenges() throws IOException {
         List<Challenge> challenges = new ArrayList<>();
-        challenges.add(new Challenge("Daily English Diary for Beginners", "Solve one coding problem daily.",
-                LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 30), 12));
-        challenges.add(new Challenge("Daily English Book Reading", "Exercise for 30 minutes daily.",
-                LocalDate.of(2024, 10, 15), LocalDate.of(2024, 12, 15), 20));
-        challenges.add(new Challenge("Daily English Diary for General", "Read 10 pages of a book daily.",
-                LocalDate.of(2024, 11, 5), LocalDate.of(2024, 12, 5), 15));
-
-        // 챌린지 패널 생성 및 추가
-        ChallengePanel challengePanel = new ChallengePanel(frame, challenges);
-        frame.add(challengePanel);
-
-        // 프레임 표시
-        frame.setVisible(true);
+        String line;
+        while (!(line = in.readLine()).equals("end")) {
+            String[] data = line.split(",");
+            if (data.length == 5) { // 데이터 필드 검증
+                try {
+                    challenges.add(new Challenge(
+                            data[0], // Title
+                            data[1], // Description
+                            LocalDate.parse(data[2]), // Start Date
+                            LocalDate.parse(data[3]), // End Date
+                            Integer.parseInt(data[4]) // Participants
+                    ));
+                } catch (Exception e) {
+                    System.err.println("Invalid data format: " + line);
+                    e.printStackTrace();
+                }
+            } else {
+                System.err.println("Invalid data received: " + line);
+            }
+        }
+        return challenges;
     }
 }
 
 // 챌린지 화면 클래스
 class ChallengePanel extends JPanel {
-    private JFrame parentFrame;
 
-    public ChallengePanel(JFrame parentFrame, List<Challenge> challenges) {
-        this.parentFrame = parentFrame; // parentFrame 초기화
-        setLayout(null);
+    public ChallengePanel(List<Challenge> challenges) {
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(224, 255, 255)); // 하늘색 배경 설정
 
-        // "나의 챌린지" 레이블
         JLabel titleLabel = new JLabel("나의 챌린지");
         titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 25));
-        titleLabel.setBounds(65, 20, 400, 70);
+        titleLabel.setAlignmentX(CENTER_ALIGNMENT);
         add(titleLabel);
+        add(Box.createVerticalStrut(20)); // 여백 추가
 
-        // 챌린지 목록 추가
-        int yOffset = 100; // 첫 번째 패널의 Y축 위치
         for (Challenge challenge : challenges) {
             JPanel challengeCard = createChallengeCard(challenge);
-            challengeCard.setBounds(40, yOffset, 440, 150); // 위치와 크기 설정
+            challengeCard.setAlignmentX(CENTER_ALIGNMENT);
             add(challengeCard);
-            yOffset += 170; // 다음 패널 간격
+            add(Box.createVerticalStrut(10)); // 카드 간 여백 추가
         }
-
-        // 챌린지 참여 버튼
-        CustomButton joinChallengeButton = new CustomButton("챌린지 참여");
-        joinChallengeButton.setBounds(45, 650, 200, 45);
-        add(joinChallengeButton);
-
-        // 챌린지 생성 버튼
-        CustomButton makeChallengeButton = new CustomButton("새 챌린지 만들기");
-        makeChallengeButton.setBounds(275, 650, 200, 45);
-        add(makeChallengeButton);
-
-        // 하단 메뉴
-        CustomButton2 challengeMenuButton = new CustomButton2("챌린지");
-        challengeMenuButton.setBounds(0, 860, 180, 60);
-        add(challengeMenuButton);
-
-        CustomButton2 rankingMenuButton = new CustomButton2("랭킹");
-        rankingMenuButton.setBounds(180, 860, 180, 60);
-        add(rankingMenuButton);
-
-        CustomButton2 mypageMenuButton = new CustomButton2("마이페이지");
-        mypageMenuButton.setBounds(360, 860, 180, 60);
-        add(mypageMenuButton);
-
-        // 버튼 클릭 이벤트
-        joinChallengeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentFrame.dispose(); // 현재 창 종료
-                JoinChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
-            }
-        });
-
-        makeChallengeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentFrame.dispose(); // 현재 창 종료
-                MakeChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
-            }
-        });
-
-        
-        challengeMenuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentFrame.dispose(); // 현재 창 종료
-                ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
-            }
-        });
-
-        rankingMenuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                parentFrame.dispose(); // 현재 창 종료
-                RankingGUI.main(new String[]{}); // RankingGUI 실행
-            }
-        });
-
-//        mypageMenuButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                parentFrame.dispose(); // 현재 창 종료
-//                MyPageGUI.main(new String[]{}); // MyPageGUI 실행
-//            }
-//        });
-        
-        
     }
 
-    // 개별 챌린지 카드를 생성하는 메서드
     private JPanel createChallengeCard(Challenge challenge) {
         JPanel cardPanel = new JPanel();
         cardPanel.setLayout(null);
         cardPanel.setBackground(Color.WHITE); // 카드 배경 흰색
-        cardPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1)); // 테두리
+        cardPanel.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+        cardPanel.setPreferredSize(new Dimension(480, 150));
 
-        // 제목
         JLabel titleLabel = new JLabel(challenge.getTitle());
         titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 14));
         titleLabel.setBounds(10, 10, 400, 20);
         cardPanel.add(titleLabel);
 
-        // 내용
         JLabel descriptionLabel = new JLabel("<html>내용: " + challenge.getDescription() + "</html>");
         descriptionLabel.setFont(new Font("나눔고딕", Font.PLAIN, 12));
         descriptionLabel.setBounds(10, 40, 400, 40);
         cardPanel.add(descriptionLabel);
 
-        // 시작일
         JLabel startDateLabel = new JLabel("시작일: " + challenge.getStartDate());
         startDateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 12));
         startDateLabel.setBounds(10, 90, 200, 20);
         cardPanel.add(startDateLabel);
 
-        // 종료일
         JLabel endDateLabel = new JLabel("종료일: " + challenge.getEndDate());
         endDateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 12));
         endDateLabel.setBounds(220, 90, 200, 20);
         cardPanel.add(endDateLabel);
 
-        // 참여 인원
         JLabel participantsLabel = new JLabel("참여 인원: " + challenge.getParticipants() + "명");
         participantsLabel.setFont(new Font("나눔고딕", Font.PLAIN, 12));
         participantsLabel.setBounds(10, 120, 200, 20);
         cardPanel.add(participantsLabel);
+        
+     // 클릭 이벤트 추가
+        cardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // 클릭된 챌린지의 데이터를 DetailChallengeGUI로 전달
+                new DetailChallengeGUI(challenge);
+            }
+        });
+
 
         return cardPanel;
     }
 }
 
-// Challenge 클래스
+// 챌린지 데이터 클래스
 class Challenge {
     private String title;
     private String description;
