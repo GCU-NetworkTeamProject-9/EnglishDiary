@@ -1,4 +1,4 @@
-#[Computer Networking Term Project] English Diary Mate
+# [Computer Networking Term Project] English Diary Mate
 
 ### Purpose
 For networking term project, we make a English Challenge Diary program
