@@ -24,9 +24,27 @@ public class DiaryChallengeServer {
                 new Challenge("Daily Reading Challenge", "Read 10 pages of a book daily.", LocalDate.of(2024, 10, 15), LocalDate.of(2024, 12, 15), 20),
                 new Challenge("Exercise Challenge", "Exercise 30 minutes daily.", LocalDate.of(2024, 11, 5), LocalDate.of(2024, 12, 5), 15)
         );
+        
+        // 기본 일기 추가
+        List<Diary> defaultDiaries=List.of(
+        		new Diary("admin","First snow day",LocalDate.of(2024, 11, 28),"Today I see snow. So I make a snowman"),
+        		new Diary("admin","Freezing",LocalDate.of(2024, 11, 29),"I'm freezing. I become a snowman"),
+        		new Diary("admin","Hi",LocalDate.of(2024, 11, 30),"Hi my name is China My name is Q")
+        );
 
+     // 사용자별 기본 챌린지와 일기 초기화
         for (String user : userCredentials.keySet()) {
             userChallenges.put(user, new ArrayList<>(defaultChallenges));
+
+            // 사용자별 기본 일기 초기화
+            Map<Integer, List<String>> defaultUserDiaryMap = new HashMap<>();
+            int day = 1; // 기본적으로 첫 번째 일기를 첫 번째 날로 저장
+            for (Diary diary : defaultDiaries) {
+                defaultUserDiaryMap.putIfAbsent(day, new ArrayList<>());
+                defaultUserDiaryMap.get(day).add("[" + diary.getTitle() + "] " + diary.getContent());
+                day++;
+            }
+            userDiaries.put(user, defaultUserDiaryMap);
         }
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -82,7 +100,9 @@ public class DiaryChallengeServer {
                 sendChallenges(clientName);
             } else if (input.startsWith("createChallenge")) {
                 handleCreateChallenge(input);
-            } else if (input.startsWith("writeDiary")) {
+            } else if (input.equals("diaries")) {
+                sendDiaries(clientName);
+            }else if (input.startsWith("writeDiary")) {
                 String[] parts = input.split(",", 3);
                 String diaryTitle = parts[1];
                 String diaryContent = parts[2];
@@ -155,6 +175,44 @@ public class DiaryChallengeServer {
                 e.printStackTrace();
             }
         }
+        
+        private void sendDiaries(String clientName) {
+            try {
+                Map<Integer, List<String>> diaryMap = userDiaries.getOrDefault(clientName, new HashMap<>());
+
+                // Diary 객체를 생성하여 클라이언트로 전송
+                for (Map.Entry<Integer, List<String>> entry : diaryMap.entrySet()) {
+                    int day = entry.getKey();
+                    for (String diaryEntry : entry.getValue()) {
+                        try {
+                            // 문자열을 파싱하여 Diary 객체로 변환
+                            String[] parts = diaryEntry.split("] ", 2);
+                            if (parts.length == 2) {
+                                String title = parts[0].substring(1); // 제목 추출
+                                String content = parts[1]; // 내용 추출
+                                LocalDate date = LocalDate.now().minusDays(7 - day); // 날짜 계산
+
+                                // 사용자명, 제목, 날짜, 내용을 포함하여 클라이언트로 전송
+                                out.println(clientName + "," + title + "," + date + "," + content);
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Invalid diary entry: " + diaryEntry);
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                // 데이터 전송 완료 표시
+                out.println("end");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+
+
+
 
         private void writeDiary(String clientName, String diaryEntry) {
             int currentDay = getCurrentDay();
@@ -168,6 +226,8 @@ public class DiaryChallengeServer {
             }
         }
 
+         
+        
         private void checkStatus(String clientName) {
             Map<Integer, List<String>> diaryMap = userDiaries.get(clientName);
             out.println("=== Your Diary Status ===");
@@ -205,6 +265,8 @@ public class DiaryChallengeServer {
         private int getCurrentDay() {
             return (int) ((System.currentTimeMillis() / (1000 * 60 * 60 * 24)) % 7) + 1;
         }
+        
+        
     }
 
     // Challenge 클래스
@@ -244,3 +306,47 @@ public class DiaryChallengeServer {
         }
     }
 }
+
+//일기 데이터 클래스
+class Diary {
+private String username;     // 작성자명
+private String title;        // 일기 제목
+private LocalDate date;      // 작성 날짜
+private String content;      // 일기 내용
+
+// 생성자
+public Diary(String username, String title, LocalDate date, String content) {
+   this.username = username;
+   this.title = title;
+   this.date = date;
+   this.content = content;
+}
+
+// Getter 메서드
+public String getUsername() {
+   return username;
+}
+
+public String getTitle() {
+   return title;
+}
+
+public LocalDate getDate() {
+   return date;
+}
+
+public String getContent() {
+   return content;
+}
+
+@Override
+public String toString() {
+   return "Diary{" +
+           "username='" + username + '\'' +
+           ", title='" + title + '\'' +
+           ", date=" + date +
+           ", content='" + content + '\'' +
+           '}';
+}
+}
+
