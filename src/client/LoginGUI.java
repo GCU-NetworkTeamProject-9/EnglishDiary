@@ -12,6 +12,7 @@ public class LoginGUI {
     private static BufferedReader in;
 
     static Socket socket;
+	public static String loggedInUsername;
 
     public static void main(String[] args) {
         // 서버 연결
@@ -103,15 +104,15 @@ public class LoginGUI {
                             JOptionPane.showMessageDialog(null, "Login Successful!");
                             System.out.println("login success");
 
-//                            // 로그인 성공 후 서버에서 사용자 정보 요청
-//                            out.println("userinfo");
-//                            String name = in.readLine(); // 사용자 이름
-//                            int rank = Integer.parseInt(in.readLine()); // 사용자 랭킹
-//                            int challengeNumber = Integer.parseInt(in.readLine()); // 참여 중인 도전 수
+                            // 로그인 성공 후 서버에서 사용자 정보 요청
+                            out.println("userinfo");
+                            final String name = in.readLine(); // 사용자 이름
+                            int rank = Integer.parseInt(in.readLine()); // 사용자 랭킹
+                            int challengeNumber = Integer.parseInt(in.readLine()); // 참여 중인 도전 수
 
-                            // MainGUI 실행
-//                            MainGUI.setUserInfo(name, rank, challengeNumber); // 사용자 정보 전달
-//                            MainGUI.main(new String[]{}, socket,in,out);
+                            
+                            //?
+                            loggedInUsername=name;
                             ChallengeGUI.main(new String[]{});
                             parentFrame.dispose(); // 현재 로그인 창 닫기
                         } else {

@@ -39,6 +39,11 @@ public class RankingGUI {
             frame.dispose();
             ChallengeGUI.main(new String[]{});
         });
+        
+        mypageMenuButton.addActionListener(e -> {
+            frame.dispose();
+            MyPageGUI.main(new String[]{});
+        });
 
         mainPanel.add(scrollPane, BorderLayout.CENTER);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);

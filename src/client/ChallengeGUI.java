@@ -94,6 +94,11 @@ public class ChallengeGUI {
                 frame.dispose();
                 ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
             });
+            
+            mypageMenuButton.addActionListener(e -> {
+                frame.dispose();
+                MyPageGUI.main(new String[]{}); // MyPageGUI 실행
+            });
 
             // 프레임에 메인 패널 추가
             frame.add(mainPanel);
@@ -184,6 +189,15 @@ class ChallengePanel extends JPanel {
         participantsLabel.setFont(new Font("나눔고딕", Font.PLAIN, 12));
         participantsLabel.setBounds(10, 120, 200, 20);
         cardPanel.add(participantsLabel);
+        
+     // 클릭 이벤트 추가
+        cardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // 클릭된 챌린지의 데이터를 DetailChallengeGUI로 전달
+                new DetailChallengeGUI(challenge);
+            }
+        });
+
 
         return cardPanel;
     }
