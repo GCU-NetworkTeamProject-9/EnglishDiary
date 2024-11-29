@@ -1,5 +1,4 @@
-### Project Title
-English Diary
+#[Computer Networking Term Project] English Diary Mate
 
 ### Purpose
 For networking term project, we make a English Challenge Diary program
@@ -8,7 +7,7 @@ For networking term project, we make a English Challenge Diary program
   - Java
 ### How to Use
 1. Execute DiaryChallengerServer.java
-2. Execute LoginGUI (Start Poinnt!)
+2. Execute LoginGUI (Start Point!)
 
 <img width="300" alt="스크린샷 2024-11-26 오후 8 27 01" src="https://github.com/user-attachments/assets/d9f65ce8-b0e6-45de-8af9-177711e32ac3">
 <img width="300" alt="스크린샷 2024-11-26 오후 8 27 29" src="https://github.com/user-attachments/assets/cd3ca473-e4b2-48f3-838c-dd8d4cff9462">
