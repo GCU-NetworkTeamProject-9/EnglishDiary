@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 
 public class JoinChallengeGUI {
 
@@ -70,6 +71,8 @@ class JoinChallengePanel extends JPanel {
         submitButton.addActionListener(e -> {
             String diaryTitle = diaryTitleField.getText();
             String diaryContent = diaryContentArea.getText();
+            LocalDate today = LocalDate.now(); // 작성 날짜
+            String username = LoginGUI.loggedInUsername; // 로그인한 사용자명
 
             if (diaryTitle.isEmpty() || diaryContent.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "일기 제목과 내용을 모두 입력해주세요!", "경고", JOptionPane.WARNING_MESSAGE);
@@ -78,10 +81,11 @@ class JoinChallengePanel extends JPanel {
 
             try {
                 PrintWriter out = new PrintWriter(LoginGUI.socket.getOutputStream(), true);
-                out.println("writeDiary," + diaryTitle + "," + diaryContent);
+                // 서버로 일기 정보 전송
+                out.println("writeDiary," + username + "," + diaryTitle + "," + today + "," + diaryContent);
 
                 JOptionPane.showMessageDialog(this, "일기가 성공적으로 저장되었습니다!", "성공", JOptionPane.INFORMATION_MESSAGE);
-                System.out.println("일기 전송: " + diaryTitle + ", " + diaryContent);
+                System.out.println("일기 전송: " + username + ", " + diaryTitle + ", " + today + ", " + diaryContent);
                 parentFrame.dispose(); // 현재 창 닫기
                 ChallengeGUI.main(new String[]{}); // ChallengeGUI로 돌아가기
             } catch (IOException ioException) {
@@ -114,8 +118,14 @@ class JoinChallengePanel extends JPanel {
             RankingGUI.main(new String[]{}); // RankingGUI 실행
         });
 
+        mypageMenuButton.addActionListener(e -> {
+            parentFrame.dispose();
+            MyPageGUI.main(new String[]{}); // MyPageGUI 실행
+        });
+
         // 메인 패널과 하단 탭을 BorderLayout에 추가
         add(mainPanel, BorderLayout.CENTER);
         add(bottomTabPanel, BorderLayout.SOUTH);
     }
 }
+
