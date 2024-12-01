@@ -15,8 +15,17 @@ public class DiaryChallengeServer {
     public static void main(String[] args) {
         // 기본 사용자 계정 추가
         userCredentials.put("admin", "1234");
-        userCredentials.put("user1", "password1");
-        userCredentials.put("user2", "password2");
+        userCredentials.put("user1", "1234");
+        userCredentials.put("user2", "1234");
+        userCredentials.put("user3", "1234");
+        userCredentials.put("user4", "1234");
+        userCredentials.put("user5", "1234");
+        userCredentials.put("user6", "1234");
+        userCredentials.put("user7", "1234");
+        userCredentials.put("user8", "1234");
+        userCredentials.put("user9", "1234");
+        userCredentials.put("user10", "1234");
+        userCredentials.put("user11", "1234");
 
         // 기본 챌린지 추가
         List<Challenge> defaultChallenges = List.of(
@@ -27,6 +36,7 @@ public class DiaryChallengeServer {
 
         for (String user : userCredentials.keySet()) {
             userChallenges.put(user, new ArrayList<>(defaultChallenges));
+            userDiaries.put(user, new HashMap<>()); // 초기화
         }
 
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
@@ -78,6 +88,8 @@ public class DiaryChallengeServer {
                 handleLogin(input);
             } else if (input.equals("userinfo")) {
                 handleUserInfo(clientName);
+            } else if (input.equals("diaries")) {
+                handleDiaries(clientName);
             } else if (input.equals("challenges")) {
                 sendChallenges(clientName);
             } else if (input.startsWith("createChallenge")) {
@@ -94,7 +106,7 @@ public class DiaryChallengeServer {
             } else if (input.equals("exit")) {
                 out.println("Goodbye!");
             } else {
-                out.println("Unknown command. Use: login, userinfo, challenges, createChallenge, writeDiary, status, rank, exit");
+                out.println("Unknown command. Use: login, userinfo, diaries, challenges, createChallenge, writeDiary, status, rank, exit");
             }
         }
 
@@ -115,6 +127,17 @@ public class DiaryChallengeServer {
             } else {
                 out.println("fail");
             }
+        }
+
+        private void handleDiaries(String clientName) {
+            Map<Integer, List<String>> diaryMap = userDiaries.getOrDefault(clientName, new HashMap<>());
+            for (Map.Entry<Integer, List<String>> entry : diaryMap.entrySet()) {
+                int day = entry.getKey();
+                for (String diary : entry.getValue()) {
+                    out.println(clientName + ",Day " + day + "," + LocalDate.now() + "," + diary);
+                }
+            }
+            out.println("end");
         }
 
         private void handleUserInfo(String clientName) {
@@ -207,7 +230,6 @@ public class DiaryChallengeServer {
         }
     }
 
-    // Challenge 클래스
     static class Challenge {
         private String title;
         private String description;

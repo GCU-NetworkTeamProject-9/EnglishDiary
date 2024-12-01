@@ -94,6 +94,10 @@ public class ChallengeGUI {
                 frame.dispose();
                 ChallengeGUI.main(new String[]{}); // ChallengeGUI 실행
             });
+            mypageMenuButton.addActionListener(e -> {
+                frame.dispose();
+                MyPageGUI.main(new String[]{}); //MyPageGUI 실행
+            });
 
             // 프레임에 메인 패널 추가
             frame.add(mainPanel);

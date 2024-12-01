@@ -113,6 +113,10 @@ class JoinChallengePanel extends JPanel {
             parentFrame.dispose();
             RankingGUI.main(new String[]{}); // RankingGUI 실행
         });
+        mypageMenuButton.addActionListener(e -> {
+            parentFrame.dispose();
+            MyPageGUI.main(new String[]{}); //MyPageGUI 실행
+        });
 
         // 메인 패널과 하단 탭을 BorderLayout에 추가
         add(mainPanel, BorderLayout.CENTER);
