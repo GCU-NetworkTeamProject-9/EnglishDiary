@@ -143,7 +143,7 @@ class ChallengePanel extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         setBackground(new Color(224, 255, 255)); // 하늘색 배경 설정
 
-        JLabel titleLabel = new JLabel("나의 챌린지");
+        JLabel titleLabel = new JLabel("챌린지 목록");
         titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 25));
         titleLabel.setAlignmentX(CENTER_ALIGNMENT);
         add(titleLabel);
