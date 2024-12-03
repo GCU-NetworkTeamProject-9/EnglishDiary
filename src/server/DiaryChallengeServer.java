@@ -17,9 +17,11 @@ public class DiaryChallengeServer {
         // 기본 사용자 계정 추가
         userCredentials.put("admin", "1234");
         // 사용자 10명 추가
-        for (int i = 1; i <= 10; i++) {
-            userCredentials.put("user" + i, "1234");
-        }
+//        for (int i = 1; i <= 10; i++) {
+//            userCredentials.put("user" + i, "1234");
+//        }
+        userCredentials.put("user1","1234");
+        userCredentials.put("user2","1234");
 
         allChallenges.add(new Challenge("Daily English Diary for Beginners", "Write a daily English diary.", LocalDate.of(2024, 11, 1), LocalDate.of(2024, 11, 30), 3));
         allChallenges.add(new Challenge("Daily Reading Challenge", "Read 10 pages of a book daily.", LocalDate.of(2024, 10, 15), LocalDate.of(2024, 12, 15), 4));
@@ -297,7 +299,7 @@ private void sendDiariesByChallenge(String challengeTitle) {
 
         private void writeDiary(String clientName, String diaryTitle, String diaryContent, String challengeTitle) {
             Challenge selectedChallenge = null;
-            for (Challenge challenge : userChallenges.get(clientName)) {
+            for (Challenge challenge : allChallenges) {
                 if (challenge.getTitle().equals(challengeTitle)) {
                     selectedChallenge = challenge;
                     break;
