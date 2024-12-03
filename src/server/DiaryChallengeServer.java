@@ -15,17 +15,17 @@ public class DiaryChallengeServer {
     public static void main(String[] args) {
         // 기본 사용자 계정 추가
         userCredentials.put("admin", "1234");
-        userCredentials.put("user1", "1234");
-        userCredentials.put("user2", "1234");
-        userCredentials.put("user3", "1234");
-        userCredentials.put("user4", "1234");
-        userCredentials.put("user5", "1234");
-        userCredentials.put("user6", "1234");
-        userCredentials.put("user7", "1234");
-        userCredentials.put("user8", "1234");
-        userCredentials.put("user9", "1234");
-        userCredentials.put("user10", "1234");
-        userCredentials.put("user11", "1234");
+//        userCredentials.put("user1", "1234");
+//        userCredentials.put("user2", "1234");
+//        userCredentials.put("user3", "1234");
+//        userCredentials.put("user4", "1234");
+//        userCredentials.put("user5", "1234");
+//        userCredentials.put("user6", "1234");
+//        userCredentials.put("user7", "1234");
+//        userCredentials.put("user8", "1234");
+//        userCredentials.put("user9", "1234");
+//        userCredentials.put("user10", "1234");
+//        userCredentials.put("user11", "1234");
 
         // 기본 챌린지 추가
         List<Challenge> defaultChallenges = List.of(
@@ -56,80 +56,80 @@ public class DiaryChallengeServer {
 //        user2Diaries.put(3, List.of("[Day 3] Exercised for 30 minutes.", "[Day 3] Did yoga."));
 //        userDiaries.put("user2", user2Diaries);
 
-        // 성공 횟수에 따른 일기 데이터 추가
-        userDiaries.put("user1", Map.of(
-                1, List.of("[Day 1] Studied English vocabulary.", "[Day 1] Practiced speaking."),
-                2, List.of("[Day 2] Watched an English movie.", "[Day 2] Took notes on phrases."),
-                3, List.of("[Day 3] Learned new grammar rules.", "[Day 3] Wrote example sentences."),
-                4, List.of("[Day 4] Spoke with a friend in English.", "[Day 4] Practiced pronunciation."),
-                5, List.of("[Day 5] Completed a vocabulary quiz.", "[Day 5] Reviewed mistakes.")
-        ));
-
-        userDiaries.put("user2", Map.of(
-                1, List.of("[Day 1] Read 10 pages of a novel.", "[Day 1] Summarized the story."),
-                2, List.of("[Day 2] Explored a new genre.", "[Day 2] Wrote a book review."),
-                3, List.of("[Day 3] Exercised for 30 minutes.", "[Day 3] Did yoga.")
-        ));
-
-        userDiaries.put("user3", new HashMap<>()); // 성공 횟수 없음, 데이터 비어 있음
-
-        userDiaries.put("user4", Map.of(
-                1, List.of("[Day 1] Worked on project documentation.", "[Day 1] Collaborated with teammates."),
-                2, List.of("[Day 2] Planned new milestones.", "[Day 2] Completed coding tasks."),
-                3, List.of("[Day 3] Reviewed code for quality.", "[Day 3] Fixed bugs."),
-                4, List.of("[Day 4] Held a team meeting.", "[Day 4] Set goals for the week."),
-                5, List.of("[Day 5] Learned new programming concepts.", "[Day 5] Applied them to the project."),
-                6, List.of("[Day 6] Completed a technical article.", "[Day 6] Shared knowledge with peers."),
-                7, List.of("[Day 7] Improved debugging skills.", "[Day 7] Resolved a major issue."),
-                8, List.of("[Day 8] Enhanced system performance.", "[Day 8] Documented results."),
-                9, List.of("[Day 9] Practiced algorithm problems.", "[Day 9] Participated in a hackathon."),
-                10, List.of("[Day 10] Successfully deployed the app.", "[Day 10] Received user feedback.")
-        ));
-
-        userDiaries.put("user5", Map.of(
-                1, List.of("[Day 1] Attended a motivational seminar.", "[Day 1] Took detailed notes.")
-        ));
-
-        userDiaries.put("user6", Map.of(
-                1, List.of("[Day 1] Practiced meditation for 15 minutes.", "[Day 1] Recorded reflections."),
-                2, List.of("[Day 2] Explored mindfulness techniques.", "[Day 2] Applied them in daily life.")
-        ));
-
-        userDiaries.put("user7", Map.of(
-                1, List.of("[Day 1] Explored a new hiking trail.", "[Day 1] Enjoyed nature."),
-                2, List.of("[Day 2] Cooked a healthy meal.", "[Day 2] Experimented with new recipes."),
-                3, List.of("[Day 3] Researched investment strategies.", "[Day 3] Created a financial plan."),
-                4, List.of("[Day 4] Helped a friend with a task.", "[Day 4] Strengthened relationships."),
-                5, List.of("[Day 5] Learned about sustainable living.", "[Day 5] Implemented changes."),
-                6, List.of("[Day 6] Organized personal workspace.", "[Day 6] Boosted productivity."),
-                7, List.of("[Day 7] Completed a workout challenge.", "[Day 7] Achieved personal goals.")
-        ));
-
-        userDiaries.put("user8", Map.of(
-                1, List.of("[Day 1] Explored advanced coding topics.", "[Day 1] Built a small application."),
-                2, List.of("[Day 2] Researched design patterns.", "[Day 2] Implemented a singleton pattern."),
-                3, List.of("[Day 3] Practiced competitive programming.", "[Day 3] Solved 5 algorithm problems."),
-                4, List.of("[Day 4] Joined a community workshop.", "[Day 4] Contributed to open-source."),
-                5, List.of("[Day 5] Learned about cloud services.", "[Day 5] Deployed a simple web app."),
-                6, List.of("[Day 6] Explored API development.", "[Day 6] Created RESTful APIs."),
-                7, List.of("[Day 7] Reviewed Java multithreading.", "[Day 7] Wrote efficient concurrent code."),
-                8, List.of("[Day 8] Learned new front-end frameworks.", "[Day 8] Built a responsive webpage."),
-                9, List.of("[Day 9] Optimized database queries.", "[Day 9] Reduced response times.")
-        ));
-
-
-        // 성공 일수 데이터 초기화
-        successDaysMap.put("user1", 5); // User1은 5일간 다이어리 성공
-        successDaysMap.put("user2", 3); // User2는 3일간 다이어리 성공
-        successDaysMap.put("user3", 0); // User3은 아직 성공 일수가 없음
-        successDaysMap.put("user4",10);
-        successDaysMap.put("user5",1);
-        successDaysMap.put("user6",2);
-        successDaysMap.put("user7",7);
-        successDaysMap.put("user8",9);
+//        // 성공 횟수에 따른 일기 데이터 추가
+//        userDiaries.put("user1", Map.of(
+//                1, List.of("[Day 1] Studied English vocabulary.", "[Day 1] Practiced speaking."),
+//                2, List.of("[Day 2] Watched an English movie.", "[Day 2] Took notes on phrases."),
+//                3, List.of("[Day 3] Learned new grammar rules.", "[Day 3] Wrote example sentences."),
+//                4, List.of("[Day 4] Spoke with a friend in English.", "[Day 4] Practiced pronunciation."),
+//                5, List.of("[Day 5] Completed a vocabulary quiz.", "[Day 5] Reviewed mistakes.")
+//        ));
+//
+//        userDiaries.put("user2", Map.of(
+//                1, List.of("[Day 1] Read 10 pages of a novel.", "[Day 1] Summarized the story."),
+//                2, List.of("[Day 2] Explored a new genre.", "[Day 2] Wrote a book review."),
+//                3, List.of("[Day 3] Exercised for 30 minutes.", "[Day 3] Did yoga.")
+//        ));
+//
+//        userDiaries.put("user3", new HashMap<>()); // 성공 횟수 없음, 데이터 비어 있음
+//
+//        userDiaries.put("user4", Map.of(
+//                1, List.of("[Day 1] Worked on project documentation.", "[Day 1] Collaborated with teammates."),
+//                2, List.of("[Day 2] Planned new milestones.", "[Day 2] Completed coding tasks."),
+//                3, List.of("[Day 3] Reviewed code for quality.", "[Day 3] Fixed bugs."),
+//                4, List.of("[Day 4] Held a team meeting.", "[Day 4] Set goals for the week."),
+//                5, List.of("[Day 5] Learned new programming concepts.", "[Day 5] Applied them to the project."),
+//                6, List.of("[Day 6] Completed a technical article.", "[Day 6] Shared knowledge with peers."),
+//                7, List.of("[Day 7] Improved debugging skills.", "[Day 7] Resolved a major issue."),
+//                8, List.of("[Day 8] Enhanced system performance.", "[Day 8] Documented results."),
+//                9, List.of("[Day 9] Practiced algorithm problems.", "[Day 9] Participated in a hackathon."),
+//                10, List.of("[Day 10] Successfully deployed the app.", "[Day 10] Received user feedback.")
+//        ));
+//
+//        userDiaries.put("user5", Map.of(
+//                1, List.of("[Day 1] Attended a motivational seminar.", "[Day 1] Took detailed notes.")
+//        ));
+//
+//        userDiaries.put("user6", Map.of(
+//                1, List.of("[Day 1] Practiced meditation for 15 minutes.", "[Day 1] Recorded reflections."),
+//                2, List.of("[Day 2] Explored mindfulness techniques.", "[Day 2] Applied them in daily life.")
+//        ));
+//
+//        userDiaries.put("user7", Map.of(
+//                1, List.of("[Day 1] Explored a new hiking trail.", "[Day 1] Enjoyed nature."),
+//                2, List.of("[Day 2] Cooked a healthy meal.", "[Day 2] Experimented with new recipes."),
+//                3, List.of("[Day 3] Researched investment strategies.", "[Day 3] Created a financial plan."),
+//                4, List.of("[Day 4] Helped a friend with a task.", "[Day 4] Strengthened relationships."),
+//                5, List.of("[Day 5] Learned about sustainable living.", "[Day 5] Implemented changes."),
+//                6, List.of("[Day 6] Organized personal workspace.", "[Day 6] Boosted productivity."),
+//                7, List.of("[Day 7] Completed a workout challenge.", "[Day 7] Achieved personal goals.")
+//        ));
+//
+//        userDiaries.put("user8", Map.of(
+//                1, List.of("[Day 1] Explored advanced coding topics.", "[Day 1] Built a small application."),
+//                2, List.of("[Day 2] Researched design patterns.", "[Day 2] Implemented a singleton pattern."),
+//                3, List.of("[Day 3] Practiced competitive programming.", "[Day 3] Solved 5 algorithm problems."),
+//                4, List.of("[Day 4] Joined a community workshop.", "[Day 4] Contributed to open-source."),
+//                5, List.of("[Day 5] Learned about cloud services.", "[Day 5] Deployed a simple web app."),
+//                6, List.of("[Day 6] Explored API development.", "[Day 6] Created RESTful APIs."),
+//                7, List.of("[Day 7] Reviewed Java multithreading.", "[Day 7] Wrote efficient concurrent code."),
+//                8, List.of("[Day 8] Learned new front-end frameworks.", "[Day 8] Built a responsive webpage."),
+//                9, List.of("[Day 9] Optimized database queries.", "[Day 9] Reduced response times.")
+//        ));
+//
+//
+//        // 성공 일수 데이터 초기화
+//        successDaysMap.put("user1", 5); // User1은 5일간 다이어리 성공
+//        successDaysMap.put("user2", 3); // User2는 3일간 다이어리 성공
+//        successDaysMap.put("user3", 0); // User3은 아직 성공 일수가 없음
+//        successDaysMap.put("user4",10);
+//        successDaysMap.put("user5",1);
+//        successDaysMap.put("user6",2);
+//        successDaysMap.put("user7",7);
+//        successDaysMap.put("user8",9);
 
         // 사용자 별 추가 챌린지
-        userChallenges.get("user3").add(new Challenge(
+        userChallenges.get("admin").add(new Challenge(
                 "Healthy Eating Challenge", "Eat healthy meals daily.", LocalDate.of(2024, 11, 1), LocalDate.of(2024, 12, 1), 8
         ));
 
@@ -281,11 +281,13 @@ public class DiaryChallengeServer {
 
             diaryMap.putIfAbsent(currentDay, new ArrayList<>());
             diaryMap.get(currentDay).add(diaryEntry);
+
+            // 성공 횟수를 매번 다이어리 작성 시 증가
+            successDaysMap.put(clientName, successDaysMap.get(clientName) + 1);
+
             System.out.println("New diary added for user " + clientName + ": " + diaryEntry);
-            if (diaryMap.get(currentDay).size() == 1) {
-                successDaysMap.put(clientName, successDaysMap.get(clientName) + 1);
-            }
         }
+
 
         private void checkStatus(String clientName) {
             Map<Integer, List<String>> diaryMap = userDiaries.get(clientName);
