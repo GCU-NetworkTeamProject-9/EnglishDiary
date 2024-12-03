@@ -158,17 +158,26 @@ public class DiaryChallengeServer {
 //                sendChallenges(clientName);
 //            }
             else if (input.equals("challenges")) {
+                System.out.println("get challenges");
                 sendAllChallenges();
             }
             else if (input.startsWith("createChallenge")) {
+                System.out.println("createChallenge");
                 handleCreateChallenge(input);
-            } else if (input.startsWith("writeDiary")) {
+            }
+            else if (input.equals("diaries")) {
+                System.out.println("getUser's diaries");
+                handleDiaries(clientName);
+            }
+            else if (input.startsWith("writeDiary")) {
+                System.out.println("writeDiary");
                 String[] parts = input.split(",", 4);
                 String diaryTitle = parts[1];
                 String diaryContent = parts[2];
                 String challengeTitle = parts[3];
                 writeDiary(clientName, diaryTitle, diaryContent, challengeTitle);
             } else if (input.equals("rank")) {
+                System.out.println("show ranking");
                 showRanking();
             } else if (input.equals("exit")) {
                 out.println("Goodbye!");
@@ -309,6 +318,28 @@ private void sendDiariesByChallenge(String challengeTitle) {
             successDaysMap.put(clientName, successDaysMap.get(clientName) + 1);
             System.out.println("New diary added for user " + clientName + " under challenge " + challengeTitle);
         }
+
+        private void handleDiaries(String clientName) {
+            Map<Challenge, Map<Integer, List<DiaryEntry>>> diaryMap = userDiaries.getOrDefault(clientName, new HashMap<>());
+            boolean hasDiaries = false;
+
+            for (Map.Entry<Challenge, Map<Integer, List<DiaryEntry>>> challengeEntry : diaryMap.entrySet()) {
+                Challenge challenge = challengeEntry.getKey();
+                for (Map.Entry<Integer, List<DiaryEntry>> dayEntry : challengeEntry.getValue().entrySet()) {
+                    int day = dayEntry.getKey();
+                    for (DiaryEntry diary : dayEntry.getValue()) {
+                        out.println("챌린지: " + challenge.getTitle() + ", 작성 날짜: " + diary.getWrittenDate() + ", " + diary);
+                        hasDiaries = true;
+                    }
+                }
+            }
+
+            if (!hasDiaries) {
+                out.println("No diaries found for user: " + clientName);
+            }
+            out.println("end");
+        }
+
 
 
         private void showRanking() {
