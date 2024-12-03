@@ -55,7 +55,7 @@ public class DetailChallengeGUI extends JFrame {
         detailPanel.add(Box.createVerticalStrut(10));
 
         JLabel participantsLabel = new JLabel("참여 인원: " + challenge.getParticipants() + "명");
-        participantsLabel.setForeground(Color.WHITE);
+        participantsLabel.setForeground(Color.BLACK);
         detailPanel.add(participantsLabel);
 
         add(detailPanel, BorderLayout.NORTH);
@@ -95,36 +95,62 @@ public class DetailChallengeGUI extends JFrame {
                 diaryEntries.add(line);
             }
 
-            for (String diaryEntry : diaryEntries) {
-                JPanel entryPanel = new JPanel();
-                entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.Y_AXIS));
-                entryPanel.setBackground(Color.WHITE); // 배경 흰색
-                entryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            if (diaryEntries.isEmpty()) {
+                // 데이터가 없을 경우 메시지 표시
+                JLabel noDataLabel = new JLabel("데이터가 없습니다.");
+                noDataLabel.setFont(new Font("나눔고딕", Font.BOLD, 16));
+                diaryPanel.setBackground(Color.WHITE);
+                noDataLabel.setForeground(Color.BLACK);
+                noDataLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                diaryPanel.add(noDataLabel);
+            } else {
 
-                JLabel titleLabel = new JLabel(diaryEntry.split(",")[0]);
-                titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 16));
-                titleLabel.setForeground(Color.BLACK); // 글씨 검정
-                entryPanel.add(titleLabel);
+                for (String diaryEntry : diaryEntries) {
+                    if (!diaryEntry.contains(",") || diaryEntry.split(",").length < 3) {
+                        // 형식이 올바르지 않은 경우
+                        diaryPanel.removeAll();
+                        JLabel noDataLabel = new JLabel("데이터가 없습니다.");
+                        noDataLabel.setFont(new Font("나눔고딕", Font.BOLD, 16));
+                        diaryPanel.setBackground(Color.WHITE);
+                        noDataLabel.setForeground(Color.BLACK);
+                        noDataLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+                        diaryPanel.add(noDataLabel);
+                        break;
+                    }
 
-                JLabel dateLabel = new JLabel("작성 날짜: " + diaryEntry.split(",")[1]);
-                dateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 14));
-                dateLabel.setForeground(Color.BLACK); // 글씨 검정
-                entryPanel.add(dateLabel);
+                    // 정상적인 데이터 처리
+                    JPanel entryPanel = new JPanel();
+                    entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.Y_AXIS));
+                    entryPanel.setBackground(Color.WHITE); // 배경 흰색
+                    entryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-                JLabel contentLabel = new JLabel("내용: " + diaryEntry.split(",")[2]);
-                contentLabel.setFont(new Font("나눔고딕", Font.PLAIN, 14));
-                contentLabel.setForeground(Color.BLACK); // 글씨 검정
-                entryPanel.add(contentLabel);
+                    JLabel titleLabel = new JLabel(diaryEntry.split(",")[0]);
+                    titleLabel.setFont(new Font("나눔고딕", Font.BOLD, 16));
+                    titleLabel.setForeground(Color.BLACK); // 글씨 검정
+                    entryPanel.add(titleLabel);
 
-                entryPanel.add(Box.createVerticalStrut(10)); // 간격 추가
+                    JLabel dateLabel = new JLabel("작성 날짜: " + diaryEntry.split(",")[1]);
+                    dateLabel.setFont(new Font("나눔고딕", Font.PLAIN, 14));
+                    dateLabel.setForeground(Color.BLACK); // 글씨 검정
+                    entryPanel.add(dateLabel);
 
-                diaryPanel.add(entryPanel);
-                diaryPanel.add(Box.createVerticalStrut(5)); // 일기 사이 간격
+                    JLabel contentLabel = new JLabel("내용: " + diaryEntry.split(",")[2]);
+                    contentLabel.setFont(new Font("나눔고딕", Font.PLAIN, 14));
+                    contentLabel.setForeground(Color.BLACK); // 글씨 검정
+                    entryPanel.add(contentLabel);
+
+                    entryPanel.add(Box.createVerticalStrut(10)); // 간격 추가
+
+                    diaryPanel.add(entryPanel);
+                    diaryPanel.add(Box.createVerticalStrut(5)); // 일기 사이 간격
+                }
             }
 
-            diaryPanel.revalidate();
-            diaryPanel.repaint();
-        } catch (IOException e) {
+// 마지막으로 패널 업데이트
+                diaryPanel.revalidate();
+                diaryPanel.repaint();
+
+            } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "서버와의 통신 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
         }
     }
