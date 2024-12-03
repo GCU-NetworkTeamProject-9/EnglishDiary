@@ -77,7 +77,7 @@ public class ChallengeGUI {
             // 버튼 이벤트 리스너
             joinChallengeButton.addActionListener(e -> {
                 frame.dispose();
-                JoinChallengeGUI.main(new String[]{}); // JoinChallengeGUI 실행
+                JoinChallengePanel.main(new String[]{}); // JoinChallengeGUI 실행
             });
 
             makeChallengeButton.addActionListener(e -> {

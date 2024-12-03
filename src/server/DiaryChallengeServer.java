@@ -172,6 +172,7 @@ public class DiaryChallengeServer {
             else if (input.startsWith("writeDiary")) {
                 System.out.println("writeDiary");
                 String[] parts = input.split(",", 4);
+                System.out.println(input);
                 String diaryTitle = parts[1];
                 String diaryContent = parts[2];
                 String challengeTitle = parts[3];
