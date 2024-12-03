@@ -189,6 +189,18 @@ class ChallengePanel extends JPanel {
         participantsLabel.setBounds(10, 120, 200, 20);
         cardPanel.add(participantsLabel);
 
+        // 클릭 이벤트 추가
+        cardPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                // 클릭된 챌린지의 데이터를 DetailChallengeGUI로 전달
+                try {
+                    new DetailChallengeGUI(challenge,LoginGUI.socket);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
         return cardPanel;
     }
 }
